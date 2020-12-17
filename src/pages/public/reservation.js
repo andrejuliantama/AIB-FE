@@ -112,13 +112,8 @@ const PublicReservation = () =>{
 	function handleRevYear(e){
 		setRevYear(e.target.value)
 	}
+
 	
-
-	function countArrivalWeekNumber(){
-		if(arrMon != null && arrDate != null){
-
-		}
-	}
 
 	function handleCustomer(e){
 		setCustomer(e.value)
@@ -159,7 +154,7 @@ const PublicReservation = () =>{
 
 	const onSubmit = (e) =>{
 		let data ={
-			Request:{
+			
 				email: email,
 				booking_info:{
 					hotel: hotel,
@@ -181,7 +176,7 @@ const PublicReservation = () =>{
 					is_repeated_guest: 1,
 					reserved_room_type: room,
 					deposit_type: deposit,
-					cutomer_type: customer,
+					customer_type: customer,
 					reservation_status: "Check-Out",
 					reservation_status_date_year: parseInt(revYear),
 					reservation_status_date_month: parseInt(revMon),
@@ -192,7 +187,7 @@ const PublicReservation = () =>{
 					total_of_special_requests: parseInt(request),
 					booking_changes: 0
 				}
-			}
+		
 		}
 
 		let config ={
@@ -201,7 +196,7 @@ const PublicReservation = () =>{
 			headers:{
 				'Content-Type':'application/json',
 			},
-			data:JSON.stringify(data)
+			data:data
 		};
 
 		Axios(config)
@@ -209,7 +204,7 @@ const PublicReservation = () =>{
 			console.log(response)
 		})
 		.catch(function (error){
-			console.log(JSON.stringify(data))
+			console.log(data)
 			console.log(error)
 		})
 	}
