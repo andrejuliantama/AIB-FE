@@ -8,6 +8,7 @@ import {
 } from "react-router-dom";
 import Zoom from 'react-reveal/Zoom';
 import userEvent from '@testing-library/user-event';
+import Axios from 'axios';
 
 window.$sesi = new Array();
 
@@ -23,21 +24,22 @@ const PublicReservation = () =>{
 	const [arrDate, setArrDate] = useState("");
 	const [arrMon, setArrMon] = useState("");
 	const [arrYear, setArrYear] = useState("");
+	const [arrWeek, setArrWeek] = useState("");
 
 	//guests
-	const [adults, setAdults] = useState("");
-	const [children, setChildren] = useState("");
-	const [babies, setBabies] = useState("");
+	const [adults, setAdults] = useState(1);
+	const [children, setChildren] = useState(0);
+	const [babies, setBabies] = useState(0);
 
 	const [meal, setMeal] = useState("");
-	const [country, setCountry] = useState("");
+	const [country, setCountry] = useState("Asia");
 	const [channel, setChannel] = useState("");
-	const [room, setRoom] = useState("");
-	const [customer, setCustomer] = useState("");
+	const [room, setRoom] = useState("A");
+	const [customer, setCustomer] = useState("Contract");
 	const [deposit, setDeposit] = useState("");
 
-	const [car, setCar] = useState("");
-	const [request, setRequest] = useState("");
+	const [car, setCar] = useState(0);
+	const [request, setRequest] = useState(0);
 
 	const countries = [
 		'Asia', 'Europe', 'Caribbean',{ value: 'Central_America', label: 'Central America' },{ value: 'South_America', label: 'South America' },{ value: 'North_America', label: 'North America' }, 'Africa', 'Oceania'
@@ -77,16 +79,58 @@ const PublicReservation = () =>{
 		setRoom(e.value)
 	}
 
+	//guests
+	function handleAdult(e){
+		setAdults(e.target.value)
+	}
+	function handleChildren(e){
+		setChildren(e.target.value)
+	}
+	function handleBabies(e){
+		setBabies(e.target.value)
+	}
+
+	//arrival date
+	function handleArrivalDate(e){
+		setArrDate(e.target.value)
+	}
 	function handleArrivalMonth(e){
 		const arrIdx = e.target.value
-		setArrMon(months[arrIdx])
-		console.log('arr mon'+arrMon)
+		setArrMon(months[arrIdx-1])
+	}
+	function handleArrivalYear(e){
+		setArrYear(e.target.value)
+	}
+
+	//resercation date
+	function handleRevDate(e){
+		setRevDate(e.target.value)
+	}
+	function handleRevMonth(e){
+		setRevMon(e.target.value)
+	}
+	function handleRevYear(e){
+		setRevYear(e.target.value)
+	}
+	
+
+	function countArrivalWeekNumber(){
+		if(arrMon != null && arrDate != null){
+
+		}
 	}
 
 	function handleCustomer(e){
 		setCustomer(e.value)
 	}
 
+	function handleCar(e){
+		setCar(e.target.value)
+	}
+
+	function handleRequest(e){
+		setRequest(e.target.value)
+	}
 
   useEffect(() => {
 		window.$sesi['email'] = email;
@@ -97,6 +141,8 @@ const PublicReservation = () =>{
 		window.$sesi['room'] = room;
 		window.$sesi['deposit'] = deposit;
 		window.$sesi['customer'] = customer;
+		window.$sesi['car'] = car;
+		window.$sesi['request'] = request;
     console.log(
 			'email: '+window.$sesi['email']+
 			'hotel: '+window.$sesi['hotel']+
@@ -105,9 +151,68 @@ const PublicReservation = () =>{
 			', channel: '+window.$sesi['channel']+
 			'room: '+window.$sesi['room']+
 			', deposit: '+window.$sesi['deposit']+
-			'customer: '+window.$sesi['customer'])  
+			'customer: '+window.$sesi['customer']+
+			'car: '+window.$sesi['car']+
+			'request: '+window.$sesi['request']
+			)  
 	});
 
+	const onSubmit = (e) =>{
+		let data ={
+			Request:{
+				email: email,
+				booking_info:{
+					hotel: hotel,
+					is_canceled: 0,
+					lead_time: 50,
+					arrival_date_year: parseInt(arrYear),
+					arrival_date_month: arrMon,
+					arrival_date_week_number: 12,
+					arrival_date_day_of_month: parseInt(arrDate),
+					stays_in_weekend_nights: 1,
+					stays_in_week_nights: 2,
+					adults: parseInt(adults),
+					children: parseInt(children),
+					babies: parseInt(babies),
+					meal: meal,
+					country: country,
+					market_segment: channel,
+					distribution_channel: channel,
+					is_repeated_guest: 1,
+					reserved_room_type: room,
+					deposit_type: deposit,
+					cutomer_type: customer,
+					reservation_status: "Check-Out",
+					reservation_status_date_year: parseInt(revYear),
+					reservation_status_date_month: parseInt(revMon),
+					reservation_status_date_day: parseInt(revDate),
+					agent: 101,
+					days_in_waiting_list: 0,
+					required_car_parking_spaces: parseInt(car),
+					total_of_special_requests: parseInt(request),
+					booking_changes: 0
+				}
+			}
+		}
+
+		let config ={
+			method: 'post',
+			url: 'http://159.65.129.134/api/public/reservation',
+			headers:{
+				'Content-Type':'application/json',
+			},
+			data:JSON.stringify(data)
+		};
+
+		Axios(config)
+		.then((response) =>{
+			console.log(response)
+		})
+		.catch(function (error){
+			console.log(JSON.stringify(data))
+			console.log(error)
+		})
+	}
 
     return(
 			<div className="reservation">
@@ -121,7 +226,7 @@ const PublicReservation = () =>{
 					</div> 
 					<div className="form mt-4">
 						<div className="headerText">Your Email</div>
-						<input type="email" className="mt-2 " onMouseLeave={handleEmail} placeholder="example@mail.com"></input>
+						<input type="email" className="mt-2 " onChange={handleEmail} placeholder="example@mail.com"></input>
 
 						<div className="headerText mt-4">Hotel Type</div>
 						<div className="row mt-2">
@@ -144,15 +249,15 @@ const PublicReservation = () =>{
 						<div className="row mt-2">
 							<div className="numberInput mr-4">
 								<div className="text mb-1">Date</div>
-								<input type="number" className="smallInput" onChange={setRevDate} placeholder="DD"></input>
+								<input type="number" className="smallInput" onChange={handleRevDate} placeholder="DD"></input>
 							</div>
 							<div className="numberInput mr-4">
 								<div className="text mb-1">Month</div>
-								<input type="number" className="smallInput" onChange={setRevMon} placeholder="MM"></input>
+								<input type="number" className="smallInput" onChange={handleRevMonth} placeholder="MM"></input>
 							</div>
 							<div className="numberInput">
 								<div className="text mb-1">Year</div>
-								<input type="number" className="smallInput" onChange={setRevYear} placeholder="YY"></input>
+								<input type="number" className="smallInput" onChange={handleRevYear} placeholder="YY"></input>
 							</div>
 						</div>
 
@@ -160,7 +265,7 @@ const PublicReservation = () =>{
 						<div className="row mt-2">
 							<div className="numberInput mr-4">
 								<div className="text mb-1">Date</div>
-								<input type="number" className="smallInput" onChange={setArrDate} placeholder="DD"></input>
+								<input type="number" className="smallInput" onChange={handleArrivalDate} placeholder="DD"></input>
 							</div>
 							<div className="numberInput mr-4">
 								<div className="text mb-1">Month</div>
@@ -168,7 +273,7 @@ const PublicReservation = () =>{
 							</div>
 							<div className="numberInput">
 								<div className="text mb-1">Year</div>
-								<input type="number" className="smallInput" onChange={setArrYear} placeholder="YY"></input>
+								<input type="number" className="smallInput" onChange={handleArrivalYear} placeholder="YY"></input>
 							</div>
 						</div>
 
@@ -176,15 +281,15 @@ const PublicReservation = () =>{
 						<div className="row mt-2">
 							<div className="numberInput mr-4">
 								<div className="text mb-1">Adults</div>
-								<input type="number" className="smallInput" onChange={setAdults} defaultValue={1}></input>
+								<input type="number" className="smallInput" onChange={handleAdult} defaultValue={1}></input>
 							</div>
 							<div className="numberInput mr-4">
 								<div className="text mb-1">Children</div>
-								<input type="number" className="smallInput" onChange={setChildren} defaultValue={0}></input>
+								<input type="number" className="smallInput" onChange={handleChildren} defaultValue={0}></input>
 							</div>
 							<div className="numberInput">
 								<div className="text mb-1">Babies</div>
-								<input type="number" className="smallInput" onChange={setBabies} defaultValue={0}></input>
+								<input type="number" className="smallInput" onChange={handleBabies} defaultValue={0}></input>
 							</div>
 						</div>
 						
@@ -264,15 +369,15 @@ const PublicReservation = () =>{
 
 						<div className="headerText mt-4">Required Car Parking Space</div>
 						<div className="numberInput mt-2">
-								<input type="number" className="smallInput" onChange={setCar} defaultValue={0}></input>
+								<input type="number" className="smallInput" onChange={handleCar} defaultValue={0}></input>
 						</div>
 
 						<div className="headerText mt-4">Number of Special Requests</div>
 						<div className="numberInput mt-2">
-								<input type="number" className="smallInput" onChange={setRequest} defaultValue={0}></input>
+								<input type="number" className="smallInput" onChange={handleRequest} defaultValue={0}></input>
 						</div>
 
-						<button className="mt-4 mb-4">Submit</button>
+						<button className="mt-4 mb-4" onClick={(e) => {onSubmit(e)}}>Submit</button>
 					
 
 
