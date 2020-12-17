@@ -1,0 +1,42 @@
+@import "../base.scss";
+
+
+.modern-radio-container {
+    display: flex;
+    cursor: pointer;
+    user-select: none;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .radio-outer-circle {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-right: 12px;
+    transition: all 0.1s linear;
+  }
+  
+  .radio-inner-circle {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background-color:map-get($color , "lemon");
+    transition: all 0.1s linear;
+  }
+  .unselected {
+    background-color: map-get($color , "white");
+  }
+  .unselected-circle {
+    width: 0;
+    height: 0;
+  }
+  .helper-text {
+    display: flex;
+    color: map-get($color , "white");;
+    padding-right: 8px;
+    font-size: 18px;
+  }
