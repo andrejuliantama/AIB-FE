@@ -14,12 +14,30 @@ window.$sesi = new Array();
 const PublicReservation = () =>{
 	const [email, setEmail] = useState("");
 	const [hotel, setHotel] = useState("");
+	//reservation date
+	const [revDate, setRevDate] = useState("");
+	const [revMon, setRevMon] = useState("");
+	const [revYear, setRevYear] = useState("");
+
+	//arrival date
+	const [arrDate, setArrDate] = useState("");
+	const [arrMon, setArrMon] = useState("");
+	const [arrYear, setArrYear] = useState("");
+
+	//guests
+	const [adults, setAdults] = useState("");
+	const [children, setChildren] = useState("");
+	const [babies, setBabies] = useState("");
+
 	const [meal, setMeal] = useState("");
 	const [country, setCountry] = useState("");
 	const [channel, setChannel] = useState("");
 	const [room, setRoom] = useState("");
 	const [customer, setCustomer] = useState("");
 	const [deposit, setDeposit] = useState("");
+
+	const [car, setCar] = useState("");
+	const [request, setRequest] = useState("");
 
 	const countries = [
 		'Asia', 'Europe', 'Caribbean',{ value: 'Central_America', label: 'Central America' },{ value: 'South_America', label: 'South America' },{ value: 'North_America', label: 'North America' }, 'Africa', 'Oceania'
@@ -36,11 +54,19 @@ const PublicReservation = () =>{
 	];
 	const defaultCustomer = customers[0];
 
+	const months = [
+		'January', 'February', 'March', 'April', 'May', 'June',
+		'July', 'August', 'September', 'October', 'November', 'December'
+	];
   const sesi = window.$sesi;
 
   function handleChange(e) {
     window.$sesi[e.target.name] = e.target.value;
     console.log(e.target.name + " changed to "+e.target.value)
+	}
+
+	function handleEmail(e){
+		setEmail(e.target.value)
 	}
 
 	function handleCountry(e){
@@ -49,6 +75,12 @@ const PublicReservation = () =>{
 
 	function handleRoom(e){
 		setRoom(e.value)
+	}
+
+	function handleArrivalMonth(e){
+		const arrIdx = e.target.value
+		setArrMon(months[arrIdx])
+		console.log('arr mon'+arrMon)
 	}
 
 	function handleCustomer(e){
@@ -89,7 +121,7 @@ const PublicReservation = () =>{
 					</div> 
 					<div className="form mt-4">
 						<div className="headerText">Your Email</div>
-						<input type="email" className="mt-2 " placeholder="example@mail.com"></input>
+						<input type="email" className="mt-2 " onMouseLeave={handleEmail} placeholder="example@mail.com"></input>
 
 						<div className="headerText mt-4">Hotel Type</div>
 						<div className="row mt-2">
@@ -112,15 +144,15 @@ const PublicReservation = () =>{
 						<div className="row mt-2">
 							<div className="numberInput mr-4">
 								<div className="text mb-1">Date</div>
-								<input type="number" className="smallInput" placeholder="DD"></input>
+								<input type="number" className="smallInput" onChange={setRevDate} placeholder="DD"></input>
 							</div>
 							<div className="numberInput mr-4">
 								<div className="text mb-1">Month</div>
-								<input type="number" className="smallInput" placeholder="MM"></input>
+								<input type="number" className="smallInput" onChange={setRevMon} placeholder="MM"></input>
 							</div>
 							<div className="numberInput">
 								<div className="text mb-1">Year</div>
-								<input type="number" className="smallInput" placeholder="YY"></input>
+								<input type="number" className="smallInput" onChange={setRevYear} placeholder="YY"></input>
 							</div>
 						</div>
 
@@ -128,15 +160,15 @@ const PublicReservation = () =>{
 						<div className="row mt-2">
 							<div className="numberInput mr-4">
 								<div className="text mb-1">Date</div>
-								<input type="number" className="smallInput" placeholder="DD"></input>
+								<input type="number" className="smallInput" onChange={setArrDate} placeholder="DD"></input>
 							</div>
 							<div className="numberInput mr-4">
 								<div className="text mb-1">Month</div>
-								<input type="number" className="smallInput" placeholder="MM"></input>
+								<input type="number" className="smallInput" onChange={handleArrivalMonth} placeholder="MM"></input>
 							</div>
 							<div className="numberInput">
 								<div className="text mb-1">Year</div>
-								<input type="number" className="smallInput" placeholder="YY"></input>
+								<input type="number" className="smallInput" onChange={setArrYear} placeholder="YY"></input>
 							</div>
 						</div>
 
@@ -144,15 +176,15 @@ const PublicReservation = () =>{
 						<div className="row mt-2">
 							<div className="numberInput mr-4">
 								<div className="text mb-1">Adults</div>
-								<input type="number" className="smallInput" defaultValue={1}></input>
+								<input type="number" className="smallInput" onChange={setAdults} defaultValue={1}></input>
 							</div>
 							<div className="numberInput mr-4">
 								<div className="text mb-1">Children</div>
-								<input type="number" className="smallInput" defaultValue={0}></input>
+								<input type="number" className="smallInput" onChange={setChildren} defaultValue={0}></input>
 							</div>
 							<div className="numberInput">
 								<div className="text mb-1">Babies</div>
-								<input type="number" className="smallInput" defaultValue={0}></input>
+								<input type="number" className="smallInput" onChange={setBabies} defaultValue={0}></input>
 							</div>
 						</div>
 						
@@ -201,7 +233,7 @@ const PublicReservation = () =>{
 						</div>
 
 						<div className="headerText mt-4">Room Type</div>
-						<Dropdown className="dropdown mt-2" options={rooms} onChange={handleRoom} value={defaultRoom} placeholder="Select a country" />
+						<Dropdown className="dropdown mt-2 smallDrop" options={rooms} onChange={handleRoom} value={defaultRoom} placeholder="Select a country" />
 
 						<div className="headerText mt-4">Deposit Type</div>
 						<div className="row mt-2">
@@ -232,12 +264,12 @@ const PublicReservation = () =>{
 
 						<div className="headerText mt-4">Required Car Parking Space</div>
 						<div className="numberInput mt-2">
-								<input type="number" className="smallInput" defaultValue={0}></input>
+								<input type="number" className="smallInput" onChange={setCar} defaultValue={0}></input>
 						</div>
 
 						<div className="headerText mt-4">Number of Special Requests</div>
 						<div className="numberInput mt-2">
-								<input type="number" className="smallInput" defaultValue={0}></input>
+								<input type="number" className="smallInput" onChange={setRequest} defaultValue={0}></input>
 						</div>
 
 						<button className="mt-4 mb-4">Submit</button>
