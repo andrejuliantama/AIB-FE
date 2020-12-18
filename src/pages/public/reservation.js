@@ -252,7 +252,7 @@ const PublicReservation = () =>{
 		const week_nights = week_obj.week_nights
 		const weekend_nights = week_obj.weekend_nights
 		const op1 = leadTime(parseInt(arrYear), arrMon, parseInt(arrDate), parseInt(revYear), parseInt(revMon), parseInt(revDate))
-		const op2 = arrivalDateWeekNumber(parseInt(arrYear), parseInt(arrMon),parseInt(arrDate))		
+		const op2 = arrivalDateWeekNumber(parseInt(arrYear), arrMon ,parseInt(arrDate))		
 		
 		const [lead, week_number] = await Promise.all([op1, op2])
 		
