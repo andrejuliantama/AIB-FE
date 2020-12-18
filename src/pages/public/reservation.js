@@ -144,33 +144,28 @@ const PublicReservation = () =>{
 	}
 
 	const weekNights = async(leaveYear, leaveMonth, leaveDay, arrivalYear, arrivalMonth, arrivalDay) => {
-		const [arrivalMonthConv, leaveMonthConv] = await Promise.all([
-			monthConverter(arrivalMonth),
-			monthConverter(leaveMonth)
-		]);
-		const dayDiff = await leadTime(leaveYear, leaveMonthConv, leaveDay, arrivalYear, arrivalMonthConv, arrivalDay);
-		let weekNums;
-		if (dayDiff > 7) {
-			weekNums = Math.floor(dayDiff / 7)
-		} else if ((dayDiff === 1) || ( dayDiff === 0)) {
-			weekNums = 0;
-		} 
-		else {
-			weekNums = 1;
-		}
-		const weekend_nights = weekNums * 2;
-		const week_nights = dayDiff - weekend_nights;
-		return {
-			week_nights,
-			weekend_nights,
-		}
-	}
-
-	const leapYearChecker = async(year) => {
-		if ((year % 4) === 0) {
-			return true;
-		}
-		return false;
+		const arrivalMonthConv = await monthConverter(arrivalMonth)
+  		const dayDiff = await leadTime(leaveYear, leaveMonth, leaveDay, arrivalYear, arrivalMonthConv, arrivalDay);
+  		const arrivalDate = new Date(arrivalYear, arrivalMonthConv - 1, arrivalDay);
+  		let weekEndNights = 0;
+  		let weekDayNights = 0;
+  		let dayNumIter = arrivalDate.getDay();
+  		for (let i=0; i < dayDiff; i++) {
+    		if (dayNumIter === 0) {
+      			weekEndNights += 1;
+      			dayNumIter+=1;
+    		} else if (dayNumIter === 6) {
+      			weekEndNights +=1;
+      			dayNumIter = 0;
+    		} else {
+      			weekDayNights +=1;
+      			dayNumIter+=1;
+   		 	}
+  		}
+  			return {
+    			week_nights: weekDayNights,
+    			weekend_nights: weekEndNights,
+  			}
 	}
 	
 	const monthConverter = async(month) => {
@@ -194,25 +189,14 @@ const PublicReservation = () =>{
 		return month;
 	}
 	
-	const dayInAYear = async(year, month, day) => {
-		const listOfDayInYear = [31,28,31,30,31,30,31,31,30,31,30,31]
-		const [isLeapYear, monthNumber] = await Promise.all([
-			leapYearChecker(year),
-			monthConverter(month)
-		]); 
-		if (isLeapYear) {
-			listOfDayInYear[1] = 29;
-		}
-		let dayCountPrevMonths = 0;
-		for (let i=0; i< monthNumber-1; i++){
-			dayCountPrevMonths += listOfDayInYear[i];
-		}
-		return dayCountPrevMonths += day;
-	}
 	
 	const arrivalDateWeekNumber = async(year, month, day) => {
-		const dayCount = await dayInAYear(year, month, day);
-		const weekNumber = Math.ceil(dayCount / 7)
+		// calculate difference from January 1
+		const daysSinceJanuary1 = await leadTime(year, month, day, year, 1, 1);
+		let weekNumber = Math.ceil(daysSinceJanuary1 / 7);
+		if (weekNumber === 0) {
+		  weekNumber += 1;
+		}
 		return weekNumber;
 	}
 	
