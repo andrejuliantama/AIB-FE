@@ -384,15 +384,15 @@ const PublicReservation = () =>{
 						<div className="row mt-2">
 							<div className="numberInput mr-4">
 								<div className="text mb-1">Date</div>
-								<input type="number" className="smallInput" onChange={handleRevDate} placeholder="DD"></input>
+								<input type="number" className="smallInput" onChange={handleRevDate} placeholder="30"></input>
 							</div>
 							<div className="numberInput mr-4">
 								<div className="text mb-1">Month</div>
-								<input type="number" className="smallInput" onChange={handleRevMonth} placeholder="MM"></input>
+								<input type="number" className="smallInput" onChange={handleRevMonth} placeholder="9"></input>
 							</div>
 							<div className="numberInput">
 								<div className="text mb-1">Year</div>
-								<input type="number" className="smallInput" onChange={handleRevYear} placeholder="YY"></input>
+								<input type="number" className="smallInput" onChange={handleRevYear} placeholder="2017"></input>
 							</div>
 						</div>
 
@@ -400,15 +400,15 @@ const PublicReservation = () =>{
 						<div className="row mt-2">
 							<div className="numberInput mr-4">
 								<div className="text mb-1">Date</div>
-								<input type="number" className="smallInput" onChange={handleArrivalDate} placeholder="DD"></input>
+								<input type="number" className="smallInput" onChange={handleArrivalDate} placeholder="3"></input>
 							</div>
 							<div className="numberInput mr-4">
 								<div className="text mb-1">Month</div>
-								<input type="number" className="smallInput" onChange={handleArrivalMonth} placeholder="MM"></input>
+								<input type="number" className="smallInput" onChange={handleArrivalMonth} placeholder="11"></input>
 							</div>
 							<div className="numberInput">
 								<div className="text mb-1">Year</div>
-								<input type="number" className="smallInput" onChange={handleArrivalYear} placeholder="YY"></input>
+								<input type="number" className="smallInput" onChange={handleArrivalYear} placeholder="2017"></input>
 							</div>
 						</div>
 
@@ -416,15 +416,15 @@ const PublicReservation = () =>{
 						<div className="row mt-2">
 							<div className="numberInput mr-4">
 								<div className="text mb-1">Date</div>
-								<input type="number" className="smallInput" onChange={handleLeaveDate} placeholder="DD"></input>
+								<input type="number" className="smallInput" onChange={handleLeaveDate} placeholder="5"></input>
 							</div>
 							<div className="numberInput mr-4">
 								<div className="text mb-1">Month</div>
-								<input type="number" className="smallInput" onChange={handleLeaveMonth} placeholder="MM"></input>
+								<input type="number" className="smallInput" onChange={handleLeaveMonth} placeholder="11"></input>
 							</div>
 							<div className="numberInput">
 								<div className="text mb-1">Year</div>
-								<input type="number" className="smallInput" onChange={handleLeaveYear} placeholder="YY"></input>
+								<input type="number" className="smallInput" onChange={handleLeaveYear} placeholder="2017"></input>
 							</div>
 						</div>
 
