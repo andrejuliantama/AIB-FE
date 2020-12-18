@@ -1,13 +1,12 @@
 import '../../styles/pages/public/reservation.scss';
 import React, {Component, useState, useEffect} from 'react';
 import { Radio } from "../../components/radio.js";
+import Jump from 'react-reveal/Jump';
 import Dropdown from 'react-dropdown';
 import 'react-dropdown/style.css';
 import {
   Link
 } from "react-router-dom";
-import Zoom from 'react-reveal/Zoom';
-import userEvent from '@testing-library/user-event';
 import Axios from 'axios';
 
 window.$sesi = new Array();
@@ -25,6 +24,11 @@ const PublicReservation = () =>{
 	const [arrMon, setArrMon] = useState("");
 	const [arrYear, setArrYear] = useState("");
 	const [arrWeek, setArrWeek] = useState("");
+
+	//leave date
+	const [leaveDate, setLeaveDate] = useState("");
+	const [leaveMon, setLeaveMon] = useState("");
+	const [leaveYear, setLeaveYear] = useState("");
 
 	//guests
 	const [adults, setAdults] = useState(1);
@@ -102,7 +106,7 @@ const PublicReservation = () =>{
 		setArrYear(e.target.value)
 	}
 
-	//resercation date
+	//reservation date
 	function handleRevDate(e){
 		setRevDate(e.target.value)
 	}
@@ -113,7 +117,100 @@ const PublicReservation = () =>{
 		setRevYear(e.target.value)
 	}
 
+	//leave date
+	function handleLeaveDate(e){
+		setLeaveDate(e.target.value)
+	}
+	function handleLeaveMonth(e){
+		const arrIdx = e.target.value
+		setLeaveMon(months[arrIdx-1])
+	}
+	function handleLeaveYear(e){
+		setLeaveYear(e.target.value)
+	}
+
+	const weekNights = async(leaveYear, leaveMonth, leaveDay, arrivalYear, arrivalMonth, arrivalDay) => {
+		const [arrivalMonthConv, leaveMonthConv] = await Promise.all([
+			monthConverter(arrivalMonth),
+			monthConverter(leaveMonth)
+		]);
+		const dayDiff = await leadTime(leaveYear, leaveMonthConv, leaveDay, arrivalYear, arrivalMonthConv, arrivalDay);
+		let weekNums;
+		if (dayDiff > 7) {
+			weekNums = Math.floor(dayDiff / 7)
+		} else if ((dayDiff === 1) || ( dayDiff === 0)) {
+			weekNums = 0;
+		} 
+		else {
+			weekNums = 1;
+		}
+		const weekend_nights = weekNums * 2;
+		const week_nights = dayDiff - weekend_nights;
+		return {
+			week_nights,
+			weekend_nights,
+		}
+	}
+
+	const leapYearChecker = async(year) => {
+		if ((year % 4) === 0) {
+			return true;
+		}
+		return false;
+	}
 	
+	const monthConverter = async(month) => {
+		if (typeof month === 'string') {
+			const monthMap = {
+				January :1,
+				February:2,
+				March :3,
+				April:4,
+				May :5,
+				June:6,
+				July:7,
+				August: 8,
+				September: 9,
+				October: 10,
+				November: 11,
+				December: 12
+			}
+			return monthMap[month];
+		}
+		return month;
+	}
+	
+	const dayInAYear = async(year, month, day) => {
+		const listOfDayInYear = [31,28,31,30,31,30,31,31,30,31,30,31]
+		const [isLeapYear, monthNumber] = await Promise.all([
+			leapYearChecker(year),
+			monthConverter(month)
+		]); 
+		if (isLeapYear) {
+			listOfDayInYear[1] = 29;
+		}
+		let dayCountPrevMonths = 0;
+		for (let i=0; i< monthNumber-1; i++){
+			dayCountPrevMonths += listOfDayInYear[i];
+		}
+		return dayCountPrevMonths += day;
+	}
+	
+	const arrivalDateWeekNumber = async(year, month, day) => {
+		const dayCount = await dayInAYear(year, month, day);
+		const weekNumber = Math.ceil(dayCount / 7)
+		return weekNumber;
+	}
+	
+	const leadTime = async(arrivalYear, arrivalMonth, arrivalDay, reservationYear, reservationMonth, reservationDay) => {
+		const arrivalMonthConv = await monthConverter(arrivalMonth);
+		const arrivalDate = new Date(arrivalYear, arrivalMonthConv-1, arrivalDay);
+		const reservationDate = new Date(reservationYear, reservationMonth-1, reservationDay);
+		const secondsDiff = (arrivalDate.valueOf() - reservationDate.valueOf()) / 1000;
+		const hours = secondsDiff / 3600;
+		const days = Math.ceil(hours / 24);
+		return days;
+	}
 
 	function handleCustomer(e){
 		setCustomer(e.value)
@@ -152,20 +249,28 @@ const PublicReservation = () =>{
 			)  
 	});
 
-	const onSubmit = (e) =>{
+	const onSubmit = async (e) =>{
+		const week_obj= await weekNights(parseInt(leaveYear), leaveMon, parseInt(leaveDate),parseInt(arrYear), arrMon, parseInt(arrDate))
+		const week_nights = week_obj.week_nights
+		const weekend_nights = week_obj.weekend_nights
+		const op1 = leadTime(parseInt(arrYear), arrMon, parseInt(arrDate), parseInt(revYear), parseInt(revMon), parseInt(revDate))
+		const op2 = arrivalDateWeekNumber(parseInt(arrYear), parseInt(arrMon),parseInt(arrDate))		
+		
+		const [lead, week_number] = await Promise.all([op1, op2])
+		
+
 		let data ={
-			
 				email: email,
 				booking_info:{
 					hotel: hotel,
 					is_canceled: 0,
-					lead_time: 50,
+					lead_time: lead,
 					arrival_date_year: parseInt(arrYear),
 					arrival_date_month: arrMon,
-					arrival_date_week_number: 12,
+					arrival_date_week_number: week_number,
 					arrival_date_day_of_month: parseInt(arrDate),
-					stays_in_weekend_nights: 1,
-					stays_in_week_nights: 2,
+					stays_in_weekend_nights: weekend_nights,
+					stays_in_week_nights: week_nights,
 					adults: parseInt(adults),
 					children: parseInt(children),
 					babies: parseInt(babies),
@@ -211,12 +316,15 @@ const PublicReservation = () =>{
 
     return(
 			<div className="reservation">
+				
 				<div className="body">
 					<div className="row justify-content-even align-items-center">
 						<div className="col line justify-content-center" />
-						<span className="col header">
+						<Jump>
+							<span className="col header">
 								Please Fill This Form!
 						</span>
+						</Jump>
 						<div className="col line" />
 					</div> 
 					<div className="form mt-4">
@@ -269,6 +377,22 @@ const PublicReservation = () =>{
 							<div className="numberInput">
 								<div className="text mb-1">Year</div>
 								<input type="number" className="smallInput" onChange={handleArrivalYear} placeholder="YY"></input>
+							</div>
+						</div>
+
+						<div className="headerText mt-4">Leave Date</div>
+						<div className="row mt-2">
+							<div className="numberInput mr-4">
+								<div className="text mb-1">Date</div>
+								<input type="number" className="smallInput" onChange={handleLeaveDate} placeholder="DD"></input>
+							</div>
+							<div className="numberInput mr-4">
+								<div className="text mb-1">Month</div>
+								<input type="number" className="smallInput" onChange={handleLeaveMonth} placeholder="MM"></input>
+							</div>
+							<div className="numberInput">
+								<div className="text mb-1">Year</div>
+								<input type="number" className="smallInput" onChange={handleLeaveYear} placeholder="YY"></input>
 							</div>
 						</div>
 
@@ -373,16 +497,32 @@ const PublicReservation = () =>{
 						</div>
 
 						<button className="mt-4 mb-4" onClick={(e) => {onSubmit(e)}}>Submit</button>
-					
-
-
-					
-
-
-							
 
 					</div>
 				</div>
+				<div className="bottomBar">
+						<div className="row justify-content-between align-items-center mt-1">
+							<div className="space ml-2" />
+							<Link to="/">
+								<div className="navigation mt-2">
+								Back to Home
+								</div>
+							</Link>
+							<div className="separatorV" />
+							<Link to="/pages/admin/reservation">
+								<div className="navigation mt-2">
+									Admin Console Reservation History
+								</div>
+							</Link>
+							<div className="separatorV" />
+							<Link to="/pages/admin/features">
+								<div className="navigation mt-2">
+									Feature Importance
+								</div>
+							</Link>
+							<div className="space mr-2" />
+						</div>
+					</div>
 			</div>
     )
 }

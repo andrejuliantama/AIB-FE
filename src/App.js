@@ -22,9 +22,9 @@ class App extends Component{
       <BrowserRouter>
         <Switch>
           <Route exact path="/" component={Home}/>
-          <Route exact path="/public/reservation/" component={PublicReservation}/>
-          <Route exact path="/admin/reservation/" component={AdminReservation}/>
-          <Route exact path="/admin/features" component={Features}/>
+          <Route exact path="/pages/public/reservation/" component={PublicReservation}/>
+          <Route exact path="/pages/admin/reservation/" component={AdminReservation}/>
+          <Route exact path="/pages/admin/features" component={Features}/>
 
         </Switch> 
       </BrowserRouter>

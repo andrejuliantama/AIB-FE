@@ -88,4 +88,27 @@
 			}
 		}
 	}
+
+	.separatorV{
+		display: flex;
+		height: 60px;
+		background-color: map-get($color, "lemon");
+		width: 2px;
+	}
+	
+	.navigation{
+		display: flex;
+		width: 100%;
+		font-size: 24px;
+		text-align: center;
+		cursor: pointer;
+		color: map-get($color , "lemon" );
+		border: 0;
+	}
+	.bottomBar{
+		width: 100%;
+		position: absolute;
+		bottom: 2vh;
+		border-top: 2px solid map-get($color , "lemon" );;
+	}
 }
