@@ -4,12 +4,24 @@ import { Radio } from "../../components/radio.js";
 import Jump from 'react-reveal/Jump';
 import Dropdown from 'react-dropdown';
 import 'react-dropdown/style.css';
+import Modal from 'react-modal';
 import {
   Link
 } from "react-router-dom";
 import Axios from 'axios';
 
 window.$sesi = new Array();
+
+const customStyles = {
+  content : {
+    top                   : '50%',
+    left                  : '50%',
+    right                 : 'auto',
+    bottom                : 'auto',
+    marginRight           : '-50%',
+    transform             : 'translate(-50%, -50%)'
+  }
+};
 
 const PublicReservation = () =>{
 	const [email, setEmail] = useState("");
@@ -44,6 +56,8 @@ const PublicReservation = () =>{
 
 	const [car, setCar] = useState(0);
 	const [request, setRequest] = useState(0);
+
+	const [modalText, setModalText] = useState("");
 
 	const countries = [
 		'Asia', 'Europe', 'Caribbean',{ value: 'Central_America', label: 'Central America' },{ value: 'South_America', label: 'South America' },{ value: 'North_America', label: 'North America' }, 'Africa', 'Oceania'
@@ -307,12 +321,30 @@ const PublicReservation = () =>{
 		Axios(config)
 		.then((response) =>{
 			console.log(response)
+			setModalText("Data berhasil dikirim")
+			openModal()
 		})
 		.catch(function (error){
 			console.log(data)
 			console.log(error)
+			setModalText("Terjadi kesalahan. Silahkan coba lagi")
+			openModal()
 		})
 	}
+	var subtitle;
+  const [modalIsOpen,setIsOpen] = React.useState(false);
+  function openModal() {
+    setIsOpen(true);
+  }
+ 
+  function afterOpenModal() {
+    // references are now sync'd and can be accessed.
+    subtitle.style.color = '#000000';
+  }
+ 
+  function closeModal(){
+    setIsOpen(false);
+  }
 
     return(
 			<div className="reservation">
@@ -499,6 +531,19 @@ const PublicReservation = () =>{
 						<button className="mt-4 mb-4" onClick={(e) => {onSubmit(e)}}>Submit</button>
 
 					</div>
+
+					<Modal
+						isOpen={modalIsOpen}
+						onAfterOpen={afterOpenModal}
+						onRequestClose={closeModal}
+						style={customStyles}
+					>
+	
+						<h2 ref={_subtitle => (subtitle = _subtitle)}>{modalText}</h2>
+						<button onClick={closeModal}>close</button>
+						
+					</Modal>
+
 				</div>
 				<div className="bottomBar">
 						<div className="row justify-content-between align-items-center mt-1">
